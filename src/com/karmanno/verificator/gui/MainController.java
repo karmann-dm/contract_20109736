@@ -2,15 +2,21 @@ package com.karmanno.verificator.gui;
 
 import com.karmanno.verificator.io.TextFileLoader;
 import com.karmanno.verificator.log.LogHandler;
+import com.karmanno.verificator.model.User;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 
-import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController implements Initializable {
     private LogHandler logHandler;
@@ -23,10 +29,14 @@ public class MainController implements Initializable {
     TextArea logsTextArea;
 
     @FXML
+    Button loadTextFileButton;
+
+    @FXML
+    TableView tableView;
+
+    @FXML
     public void handleOnStartVerificationClicked(MouseEvent mouseEvent) {
-        System.out.println("Mouse clicked");
         startVerificationButton.setDisable(true);
-        logHandler.log("Hi there!");
     }
 
     @FXML
