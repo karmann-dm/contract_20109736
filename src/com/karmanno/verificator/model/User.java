@@ -1,12 +1,6 @@
 package com.karmanno.verificator.model;
 
 public class User {
-    enum UserStatus {
-        VERIFIED,
-        VERIFYING,
-        UNVERIFIED
-    }
-
     private String username;
     private String password;
     private UserStatus userStatus;
