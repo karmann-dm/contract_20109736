@@ -23,6 +23,7 @@ public class LogHandler {
         result.append(dateFormat.format(Calendar.getInstance().getTime()));
         result.append("]: ");
         result.append(message);
+        result.append("\n");
 
         textArea.appendText(result.toString());
     }
