@@ -3,12 +3,14 @@ package com.karmanno.verificator.gui;
 import com.karmanno.verificator.io.TextFileLoader;
 import com.karmanno.verificator.log.LogHandler;
 import com.karmanno.verificator.model.User;
+import com.karmanno.verificator.model.UserStatus;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -49,26 +51,19 @@ public class MainController implements Initializable {
             try {
                 ArrayList<User> models = textFileLoader.loadModels(file);
                 tableView.getColumns().clear();
-                TableColumn<Map, String> usernameColumn = new TableColumn<>("Username");
-                TableColumn<Map, String> passwordColumn = new TableColumn<>("Password");
-                TableColumn<Map, String> statusColumn = new TableColumn<>("Status");
 
-                usernameColumn.setCellFactory(new MapValueFactory("username"));
-                passwordColumn.setCellFactory(new MapValueFactory("password"));
-                statusColumn.setCellFactory(new MapValueFactory("status"));
+                TableColumn usernameColumn = new TableColumn("Username");
+                usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+                TableColumn passwordColumn = new TableColumn("Password");
+                passwordColumn.setCellValueFactory(new PropertyValueFactory<>("password"));
+                TableColumn statusColumn = new TableColumn("Status");
+                statusColumn.setCellValueFactory(new PropertyValueFactory<>("userStatus"));
 
                 tableView.getColumns().addAll(usernameColumn, passwordColumn, statusColumn);
 
-                tableView.getItems().clear();
-
                 for(User model : models) {
-                    Map<String, String> dataRow = new HashMap<>();
-                    dataRow.put("username", model.getUsername());
-                    dataRow.put("password", model.getPassword());
-                    dataRow.put("status", model.getUserStatus().toString());
-                    tableView.getItems().add(dataRow);
+                    tableView.getItems().add(model);
                 }
-
             } catch (Exception e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error while opening file");
