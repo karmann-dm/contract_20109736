@@ -7,7 +7,6 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -17,7 +16,7 @@
       <AnchorPane layoutY="25.0" prefHeight="65.0" prefWidth="600.0" style="-fx-background-color: #d279a6;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <Button fx:id="loadTextFileButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#handleOnLoadFileButtonClicked" prefHeight="25.0" prefWidth="120.0" style="-fx-border-radius: 0 0 0 0; -fx-background-color: white; -fx-background-radius: 0 0 0 0;" text="Load from text file" AnchorPane.bottomAnchor="20.0" AnchorPane.topAnchor="20.0" />
-            <Button layoutX="145.0" layoutY="20.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="71.0" style="-fx-background-color: white; -fx-background-radius: 0 0 0 0;" text="Clear All" />
+            <Button fx:id="clearAllButton" layoutX="145.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#handleOnClearAllButtonClicked" prefHeight="25.0" prefWidth="71.0" style="-fx-background-color: white; -fx-background-radius: 0 0 0 0;" text="Clear All" />
          </children>
       </AnchorPane>
       <MenuBar prefHeight="25.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
@@ -42,7 +41,7 @@
       <AnchorPane layoutY="360.0" prefHeight="65.0" prefWidth="669.0" style="-fx-background-color: #e6b3cc;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <Button fx:id="startVerificationButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#handleOnStartVerificationClicked" text="Start verification" />
-            <ProgressBar layoutX="126.0" layoutY="24.0" prefHeight="18.0" prefWidth="462.0" progress="0.0" AnchorPane.leftAnchor="126.0" AnchorPane.rightAnchor="12.0" />
+            <ProgressBar fx:id="progressBar" layoutX="126.0" layoutY="24.0" prefHeight="18.0" prefWidth="462.0" progress="0.0" AnchorPane.leftAnchor="126.0" AnchorPane.rightAnchor="12.0" />
          </children></AnchorPane>
       <SplitPane dividerPositions="0.6646058732612056" layoutX="14.0" layoutY="97.0" prefHeight="216.0" prefWidth="649.0" AnchorPane.bottomAnchor="72.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="97.0">
         <items>
