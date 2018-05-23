@@ -5,6 +5,7 @@ import com.karmanno.verificator.log.LogHandler;
 import com.karmanno.verificator.model.User;
 import com.karmanno.verificator.model.UserStatus;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -28,6 +29,9 @@ public class MainController implements Initializable {
     Button startVerificationButton;
 
     @FXML
+    Button clearAllButton;
+
+    @FXML
     TextArea logsTextArea;
 
     @FXML
@@ -37,8 +41,41 @@ public class MainController implements Initializable {
     TableView tableView;
 
     @FXML
+    ProgressBar progressBar;
+
+    public Task createWorker() {
+        return new Task() {
+            @Override
+            protected Object call() throws Exception {
+                for(int i = 0; i < 1000000; i++)
+                    System.out.println("ddd");
+                return new Object();
+            }
+        };
+    }
+
+    @FXML
     public void handleOnStartVerificationClicked(MouseEvent mouseEvent) {
+        logHandler.log("Verification started");
         startVerificationButton.setDisable(true);
+        Task task = createWorker();
+        progressBar.progressProperty().bind(task.progressProperty());
+        task.setOnSucceeded(e -> {
+            progressBar.progressProperty().unbind();
+            progressBar.setProgress(1.0);
+            startVerificationButton.setDisable(false);
+        });
+        task.setOnFailed(e -> task.getException().printStackTrace());
+        Thread thread = new Thread(task);
+        thread.start();
+    }
+
+    @FXML
+    public void handleOnClearAllButtonClicked(MouseEvent mouseEvent) {
+        logHandler.log("Clearing table...");
+        tableView.getItems().clear();
+        tableView.getColumns().clear();
+        logHandler.log("Table is clear");
     }
 
     @FXML
