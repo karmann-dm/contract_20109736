@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -64,23 +65,25 @@ public class MainController implements Initializable {
                     tableView.getItems().set(index, model);
 
                     try {
-                        WebDriver webDriver = new ChromeDriver();
-                        webDriver.get("https://www.nike.com/gb/en_gb/gb/");
-
-                        Thread.sleep(1000);
-
-                        WebElement body = ((ChromeDriver) webDriver).findElementByTagName("body");
-                        Actions builder = new Actions(webDriver);
-                        builder.moveToElement(body, 50, 50).click().build().perform();
+                        WebDriver webDriver = new FirefoxDriver();
+                        webDriver.get("https://www.nike.com/gb/en_gb/");
 
                         Thread.sleep(3000);
 
-                        WebElement acceptButton = webDriver.findElement(By.cssSelector("button[class='nsg-button nsg-grad--nike-orange yes-button cookie-settings-button js-yes-button wide']"));
-                        builder.moveToElement(acceptButton, 0, 0).click().build().perform();
+                        Actions builder = new Actions(webDriver);
 
                         Thread.sleep(1000);
 
                         WebElement loginButton = webDriver.findElement(By.cssSelector("span[class='login-text']"));
+                        builder.moveToElement(loginButton, 0, 0).click().build().perform();
+
+                        Thread.sleep(1000);
+
+                        //WebElement acceptButton = webDriver.findElement(By.cssSelector("button[class='nsg-button nsg-grad--nike-orange yes-button cookie-settings-button js-yes-button wide']"));
+                        //builder.moveToElement(acceptButton, 0, 0).click().build().perform();
+
+                        //Thread.sleep(1000);
+
                         builder.moveToElement(loginButton, 0, 0).click().build().perform();
 
                         Thread.sleep(1000);
@@ -95,6 +98,8 @@ public class MainController implements Initializable {
                         passwordInput.click();
                         passwordInput.clear();
                         passwordInput.sendKeys(model.getPassword());
+
+                        passwordInput.sendKeys(Keys.ENTER);
 
                         Thread.sleep(1000);
 
