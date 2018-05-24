@@ -47,9 +47,10 @@ public class MainController implements Initializable {
         return new Task() {
             @Override
             protected Object call() throws Exception {
-                for(int i = 0; i < 1000000; i++)
-                    System.out.println("ddd");
-                return new Object();
+
+
+
+                return null;
             }
         };
     }
