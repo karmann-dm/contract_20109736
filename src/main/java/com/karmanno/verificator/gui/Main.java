@@ -21,6 +21,8 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+        System.setProperty("webdriver.gecko.driver", "src/main/resources/geckodriver.exe");
+        System.setProperty("webdriver.opera.driver", "src/main/resources/operadriver.exe");
         launch(args);
     }
 }
