@@ -64,15 +64,12 @@ public class MainController implements Initializable {
                     tableView.getItems().set(index, model);
 
                     try {
-                        OperaOptions operaOptions = new OperaOptions();
-                        operaOptions.setBinary("C:\\Program Files\\Opera\\52.0.2871.64\\opera.exe");
-
-                        WebDriver webDriver = new OperaDriver(operaOptions);
+                        WebDriver webDriver = new ChromeDriver();
                         webDriver.get("https://www.nike.com/gb/en_gb/gb/");
 
                         Thread.sleep(1000);
 
-                        WebElement body = ((OperaDriver) webDriver).findElementByTagName("body");
+                        WebElement body = ((ChromeDriver) webDriver).findElementByTagName("body");
                         Actions builder = new Actions(webDriver);
                         builder.moveToElement(body, 50, 50).click().build().perform();
 
