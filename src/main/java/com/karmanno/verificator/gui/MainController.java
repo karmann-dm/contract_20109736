@@ -13,8 +13,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.opera.OperaDriver;
+import org.openqa.selenium.opera.OperaOptions;
 
 import java.io.File;
 import java.net.URL;
@@ -57,12 +63,55 @@ public class MainController implements Initializable {
                     model.setUserStatus(UserStatus.VERIFYING);
                     tableView.getItems().set(index, model);
 
-                    WebDriver webDriver = new ChromeDriver();
-                    webDriver.get("https://www.nike.com/gb/en_gb/gb/");
-                    webDriver.close();
+                    try {
+                        OperaOptions operaOptions = new OperaOptions();
+                        operaOptions.setBinary("C:\\Program Files\\Opera\\52.0.2871.64\\opera.exe");
+
+                        WebDriver webDriver = new OperaDriver(operaOptions);
+                        webDriver.get("https://www.nike.com/gb/en_gb/gb/");
+
+                        Thread.sleep(1000);
+
+                        WebElement body = ((OperaDriver) webDriver).findElementByTagName("body");
+                        Actions builder = new Actions(webDriver);
+                        builder.moveToElement(body, 50, 50).click().build().perform();
+
+                        Thread.sleep(3000);
+
+                        WebElement acceptButton = webDriver.findElement(By.cssSelector("button[class='nsg-button nsg-grad--nike-orange yes-button cookie-settings-button js-yes-button wide']"));
+                        builder.moveToElement(acceptButton, 0, 0).click().build().perform();
+
+                        Thread.sleep(1000);
+
+                        WebElement loginButton = webDriver.findElement(By.cssSelector("span[class='login-text']"));
+                        builder.moveToElement(loginButton, 0, 0).click().build().perform();
+
+                        Thread.sleep(1000);
+
+                        WebElement usernameInput = webDriver.findElement(By.cssSelector("input[type='email']"));
+                        WebElement passwordInput = webDriver.findElement(By.cssSelector("input[type='password']"));
+
+                        usernameInput.click();
+                        usernameInput.clear();
+                        usernameInput.sendKeys(model.getUsername());
+
+                        passwordInput.click();
+                        passwordInput.clear();
+                        passwordInput.sendKeys(model.getPassword());
+
+                        Thread.sleep(1000);
+
+                        WebElement submitLoginButton = webDriver.findElement(By.cssSelector("input[type='button'][value='LOG IN']"));
+                        submitLoginButton.click();
+
+                        model.setUserStatus(UserStatus.VERIFIED);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        logHandler.log("Failed to verify user " + model.toString());
+                        model.setUserStatus(UserStatus.UNVERIFIED);
+                    }
                     //Thread.sleep(1000);
 
-                    model.setUserStatus(UserStatus.VERIFIED);
                     tableView.getItems().set(index, model);
                     updateProgress(index, models.size());
 
