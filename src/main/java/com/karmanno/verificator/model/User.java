@@ -36,4 +36,9 @@ public class User {
     public void setUserStatus(UserStatus userStatus) {
         this.userStatus = userStatus;
     }
+
+    @Override
+    public String toString() {
+        return getUsername() + ":" + getPassword();
+    }
 }
