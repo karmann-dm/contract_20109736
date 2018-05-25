@@ -1,5 +1,10 @@
 package com.karmanno.verificator.gui;
 
+import autoitx4java.AutoItX;
+import com.jacob.com.LibraryLoader;
+import com.karmanno.verificator.automation.ChromeNikeAutomation;
+import com.karmanno.verificator.automation.NikeAutomation;
+import com.karmanno.verificator.io.ProxyFileLoader;
 import com.karmanno.verificator.io.TextFileLoader;
 import com.karmanno.verificator.log.LogHandler;
 import com.karmanno.verificator.model.User;
@@ -9,19 +14,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
+import javafx.scene.control.Alert;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.opera.OperaDriver;
-import org.openqa.selenium.opera.OperaOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
 import java.net.URL;
@@ -31,8 +35,12 @@ import java.util.stream.Collectors;
 public class MainController implements Initializable {
     private LogHandler logHandler;
     private TextFileLoader textFileLoader = new TextFileLoader();
+    private ProxyFileLoader proxyFileLoader = new ProxyFileLoader();
     private AlertFactory alertFactory = new AlertFactory();
-    ArrayList<User> models = null;
+
+    private ArrayList<Proxy> proxies = null;
+    private ArrayList<User> models = null;
+    private NikeAutomation automation;
 
     @FXML
     Button startVerificationButton;
@@ -55,6 +63,13 @@ public class MainController implements Initializable {
     @FXML
     ProgressBar progressBar;
 
+    private void mozProxyAuth(String login, String password) {
+        String jacobDllToUse = System.getProperty("sun.arch.data.model").contains("32") ? "jacob-1.18-x86.dll" : "jacob-1.18-x64.dll";
+        File file = new File(System.getProperty("user.dir"), jacobDllToUse);
+        System.setProperty(LibraryLoader.JACOB_DLL_PATH, file.getAbsolutePath());
+        AutoItX x = new AutoItX();
+    }
+
     public Task createWorker() {
         return new Task() {
             @Override
@@ -65,48 +80,18 @@ public class MainController implements Initializable {
                     tableView.getItems().set(index, model);
 
                     try {
-                        WebDriver webDriver = new ChromeDriver();
-                        webDriver.get("https://www.nike.com/gb/en_gb/");
+                        Proxy proxy = proxies.get(0);
 
-                        Thread.sleep(3000);
-
-                        Actions builder = new Actions(webDriver);
-
-                        Thread.sleep(1000);
-
-                        WebElement loginButton = webDriver.findElement(By.cssSelector("span[class='login-text']"));
-                        builder.moveToElement(loginButton, 0, 0).click().build().perform();
-
-                        Thread.sleep(1000);
-
-                        //WebElement acceptButton = webDriver.findElement(By.cssSelector("button[class='nsg-button nsg-grad--nike-orange yes-button cookie-settings-button js-yes-button wide']"));
-                        //builder.moveToElement(acceptButton, 0, 0).click().build().perform();
-
-                        //Thread.sleep(1000);
-
-                        builder.moveToElement(loginButton, 0, 0).click().build().perform();
-
-                        Thread.sleep(1000);
-
-                        WebElement usernameInput = webDriver.findElement(By.cssSelector("input[type='email']"));
-                        WebElement passwordInput = webDriver.findElement(By.cssSelector("input[type='password']"));
-
-                        usernameInput.click();
-                        usernameInput.clear();
-                        usernameInput.sendKeys(model.getUsername());
-
-                        passwordInput.click();
-                        passwordInput.clear();
-                        passwordInput.sendKeys(model.getPassword());
-
-                        passwordInput.sendKeys(Keys.ENTER);
-
-                        Thread.sleep(1000);
-
-                        WebElement submitLoginButton = webDriver.findElement(By.cssSelector("input[type='button'][value='LOG IN']"));
-                        submitLoginButton.click();
+                        ChromeOptions chromeOptions = new ChromeOptions();
+                        chromeOptions.setCapability("proxy", proxy);
+                        ChromeDriver webDriver = new ChromeDriver(chromeOptions);
+                        ChromeNikeAutomation automation = new ChromeNikeAutomation(webDriver);
+                        automation.get();
+                        new ProcessBuilder("src/main/resources/chromeProxy.exe").start().wait(100);
+                        Thread.sleep(8000);
 
                         model.setUserStatus(UserStatus.VERIFIED);
+
                     } catch (Exception e) {
                         e.printStackTrace();
                         logHandler.log("Failed to verify user " + model.toString());
@@ -176,7 +161,7 @@ public class MainController implements Initializable {
                 if(models != null)
                     models.clear();
 
-                models = textFileLoader.loadModels(file);
+                models = textFileLoader.load(file);
 
                 tableView.getColumns().clear();
 
@@ -236,7 +221,7 @@ public class MainController implements Initializable {
 
         if(file != null) {
             try {
-                textFileLoader.saveModels(
+                textFileLoader.save(
                         file,
                         models.stream().filter(
                                 user -> user.getUserStatus().equals(UserStatus.VERIFIED)
@@ -254,5 +239,10 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         logHandler = new LogHandler(logsTextArea);
+        try {
+            proxies = proxyFileLoader.load(new File("src/main/resources/proxyList.txt"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
