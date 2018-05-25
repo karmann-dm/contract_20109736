@@ -1,10 +1,10 @@
 package com.karmanno.verificator.automation;
 
 public interface NikeAutomation {
-    void get();
-    void refresh();
-    void clickLogin();
-    void clickAcceptCookies();
-    void dismissChangeCountryAlert();
-    void fulfillForm(String username, String password);
+    void get() throws InterruptedException;
+    void refresh() throws InterruptedException;
+    void clickLogin() throws InterruptedException;
+    void clickAcceptCookies() throws InterruptedException;
+    void dismissChangeCountryAlert() throws InterruptedException;
+    void fulfillForm(String username, String password) throws InterruptedException;
 }
