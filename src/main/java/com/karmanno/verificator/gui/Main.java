@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Base64;
+
 public class Main extends Application {
 
     @Override
@@ -23,6 +25,7 @@ public class Main extends Application {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
         System.setProperty("webdriver.gecko.driver", "src/main/resources/geckodriver.exe");
         System.setProperty("webdriver.opera.driver", "src/main/resources/operadriver.exe");
+        System.setProperty("phantomjs.binary.path", "src/main/resources/phantomjs.exe");
         launch(args);
     }
 }
