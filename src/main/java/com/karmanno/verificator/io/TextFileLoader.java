@@ -4,10 +4,10 @@ import com.karmanno.verificator.model.User;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
-public class TextFileLoader {
-    public ArrayList<User> loadModels(File file) throws Exception {
+public class TextFileLoader implements FileLoader {
+    @Override
+    public ArrayList<User> load(File file) throws Exception {
         ArrayList<User> users = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line = reader.readLine();
@@ -27,8 +27,11 @@ public class TextFileLoader {
         return users;
     }
 
-    public void saveModels(File file, List<User> models) throws Exception {
+    @Override
+    public void save(File file, Object object) throws Exception {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        ArrayList<User> models = (ArrayList<User>)object;
+
         for(User model : models) {
             writer.write(model.toString());
             writer.newLine();
