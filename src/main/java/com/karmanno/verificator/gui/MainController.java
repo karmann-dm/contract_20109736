@@ -87,8 +87,19 @@ public class MainController implements Initializable {
                         ChromeDriver webDriver = new ChromeDriver(chromeOptions);
                         ChromeNikeAutomation automation = new ChromeNikeAutomation(webDriver);
                         automation.get();
-                        new ProcessBuilder("src/main/resources/chromeProxy.exe").start().wait(100);
-                        Thread.sleep(8000);
+                        myProcess.destroy();
+
+                        automation.clickAcceptCookies();
+                        automation.clickLogin();
+                        automation.fulfillForm(model.getUsername(), model.getPassword());
+                        automation.getSettings();
+                        automation.clickAddPhone();
+                        automation.checkLegalTerms();
+
+                        String number = smspvaApiWorker.getPhoneNumber();
+                        logHandler.log("Got " + number + " number");
+                        automation.enterPhone(number);
+                        automation.pressVerify();
 
                         model.setUserStatus(UserStatus.VERIFIED);
 
