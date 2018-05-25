@@ -65,7 +65,7 @@ public class MainController implements Initializable {
                     tableView.getItems().set(index, model);
 
                     try {
-                        WebDriver webDriver = new FirefoxDriver();
+                        WebDriver webDriver = new ChromeDriver();
                         webDriver.get("https://www.nike.com/gb/en_gb/");
 
                         Thread.sleep(3000);
