@@ -9,6 +9,7 @@ import com.karmanno.verificator.io.TextFileLoader;
 import com.karmanno.verificator.log.LogHandler;
 import com.karmanno.verificator.model.User;
 import com.karmanno.verificator.model.UserStatus;
+import com.karmanno.verificator.net.SmspvaApiWorker;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -41,6 +42,8 @@ public class MainController implements Initializable {
     private ArrayList<Proxy> proxies = null;
     private ArrayList<User> models = null;
     private NikeAutomation automation;
+
+    private SmspvaApiWorker smspvaApiWorker = new SmspvaApiWorker();
 
     @FXML
     Button startVerificationButton;
@@ -84,8 +87,11 @@ public class MainController implements Initializable {
 
                         ChromeOptions chromeOptions = new ChromeOptions();
                         chromeOptions.setCapability("proxy", proxy);
+
                         ChromeDriver webDriver = new ChromeDriver(chromeOptions);
                         ChromeNikeAutomation automation = new ChromeNikeAutomation(webDriver);
+
+                        Process myProcess = Runtime.getRuntime().exec("src/main/resources/chromeProxy.exe");
                         automation.get();
                         myProcess.destroy();
 
@@ -146,6 +152,7 @@ public class MainController implements Initializable {
         task.setOnFailed(e -> task.getException().printStackTrace());
         Thread thread = new Thread(task);
         thread.start();
+
     }
 
     @FXML
