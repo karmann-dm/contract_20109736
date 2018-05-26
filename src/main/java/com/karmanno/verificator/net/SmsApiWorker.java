@@ -1,7 +1,9 @@
 package com.karmanno.verificator.net;
 
+import org.json.JSONObject;
+
 public interface SmsApiWorker {
-    String getPhoneNumber();
-    String getCode();
+    JSONObject getPhoneNumber();
+    String getCode(String number);
     void denyNumber(String number);
 }
