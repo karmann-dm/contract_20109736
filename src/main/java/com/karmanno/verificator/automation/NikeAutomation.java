@@ -12,5 +12,6 @@ public interface NikeAutomation {
     void checkLegalTerms() throws InterruptedException;
     void enterPhone(String phone) throws InterruptedException;
     void pressVerify() throws InterruptedException;
+    void pressGetCode() throws InterruptedException;
     void enterCode(String code) throws InterruptedException;
 }

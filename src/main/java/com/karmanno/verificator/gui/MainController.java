@@ -20,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -82,18 +83,20 @@ public class MainController implements Initializable {
                     model.setUserStatus(UserStatus.VERIFYING);
                     tableView.getItems().set(index, model);
 
+                    Proxy proxy = proxies.get(0);
+
+                    ChromeOptions chromeOptions = new ChromeOptions();
+                    chromeOptions.setCapability("proxy", proxy);
+
+                    ChromeDriver webDriver = new ChromeDriver(chromeOptions);
+
                     try {
-                        Proxy proxy = proxies.get(0);
-
-                        ChromeOptions chromeOptions = new ChromeOptions();
-                        chromeOptions.setCapability("proxy", proxy);
-
-                        ChromeDriver webDriver = new ChromeDriver(chromeOptions);
                         ChromeNikeAutomation automation = new ChromeNikeAutomation(webDriver);
 
                         Process myProcess = Runtime.getRuntime().exec("src/main/resources/chromeProxy.exe");
                         automation.get();
                         myProcess.destroy();
+                        myProcess.waitFor();
 
                         automation.clickAcceptCookies();
                         automation.clickLogin();
@@ -102,10 +105,16 @@ public class MainController implements Initializable {
                         automation.clickAddPhone();
                         automation.checkLegalTerms();
 
-                        String number = smspvaApiWorker.getPhoneNumber();
-                        logHandler.log("Got " + number + " number");
-                        automation.enterPhone(number);
+                        JSONObject number = smspvaApiWorker.getPhoneNumber();
+                        logHandler.log("Got " + number.getString("number") + " number");
+                        automation.enterPhone(number.getString("number"));
                         automation.pressVerify();
+                        automation.pressGetCode();
+
+                        String code = smspvaApiWorker.getCode(number.get("id").toString());
+                        if(code == null)
+                            throw new RuntimeException("Cannot get the code");
+                        automation.enterCode(code);
 
                         model.setUserStatus(UserStatus.VERIFIED);
 
@@ -114,7 +123,8 @@ public class MainController implements Initializable {
                         logHandler.log("Failed to verify user " + model.toString());
                         model.setUserStatus(UserStatus.UNVERIFIED);
                     }
-                    //Thread.sleep(1000);
+
+                    webDriver.close();
 
                     tableView.getItems().set(index, model);
                     updateProgress(index, models.size());
