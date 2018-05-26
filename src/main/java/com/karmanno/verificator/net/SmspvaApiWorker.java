@@ -40,8 +40,50 @@ public class SmspvaApiWorker implements SmsApiWorker {
     }
 
     @Override
-    public String getCode() {
-        return null;
+    public JSONObject getPhoneNumber() {
+        HashMap<String, String> parametersMap = new HashMap<String, String>();
+        parametersMap.put("method", "get_number");
+        parametersMap.put("country", "UK");
+        parametersMap.put("service", "opt86");
+        parametersMap.put("apikey", apiKey);
+        try {
+            JSONObject jsonObject = new JSONObject(performRequest(basicUrl, parametersMap));
+            if(jsonObject.getInt("response") == 1)
+                return jsonObject;
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public String getCode(String number) {
+        HashMap<String, String> parametersMap = new HashMap<>();
+        parametersMap.put("method", "get_sms");
+        parametersMap.put("country", "UK");
+        parametersMap.put("service", "opt86");
+        parametersMap.put("id", number);
+        parametersMap.put("apikey", apiKey);
+        try {
+            JSONObject jsonObject = new JSONObject(performRequest(basicUrl, parametersMap));
+            int response = jsonObject.getInt("response");
+            System.out.println("Response: " + response);
+            int countdown = 20;
+            while (response != 1) {
+                jsonObject = new JSONObject(performRequest(basicUrl, parametersMap));
+                response = jsonObject.getInt("response");
+                System.out.println("Response: " + response);
+                Thread.sleep(1000);
+                countdown--;
+
+                if(countdown < 0)
+                    return null;
+            }
+            System.out.println(jsonObject.getString("sms"));
+            return jsonObject.getString("sms");
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
