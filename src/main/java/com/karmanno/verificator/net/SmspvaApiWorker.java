@@ -12,35 +12,31 @@ import org.json.JSONObject;
 import org.openqa.selenium.json.Json;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SmspvaApiWorker implements SmsApiWorker {
     private static final String apiKey = "wUkkwsAScZ93OCRyqxlZEYIAYzFEUV";
     private static final String basicUrl = "http://smspva.com/priemnik.php";
     private CloseableHttpClient closeableHttpClient = HttpClients.createDefault();
 
-    @Override
-    public String getPhoneNumber() {
-        StringBuilder uriBuilder = new StringBuilder();
-        uriBuilder.append(basicUrl);
-        uriBuilder.append("?");
-        uriBuilder.append("method=get_number&");
-        uriBuilder.append("country=UK&");
-        uriBuilder.append("service=opt86&");
-        uriBuilder.append("apikey=" + apiKey);
-        HttpGet httpGet = new HttpGet(uriBuilder.toString());
-        String out = null;
-        try {
-            CloseableHttpResponse httpResponse = closeableHttpClient.execute(httpGet);
-            HttpEntity entity = httpResponse.getEntity();
-            out = EntityUtils.toString(entity, "UTF-8");
-            JSONObject jsonObject = new JSONObject(out);
-            if(jsonObject.getInt("response") == 1) {
-                return jsonObject.getString("number");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    private String performRequest(String url, HashMap<String, String> parameters) throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(url);
+        stringBuilder.append("?");
+        int index = 0;
+        for(Map.Entry<String, String> parameter : parameters.entrySet()) {
+            stringBuilder.append(parameter.getKey() + "=" + parameter.getValue());
+            if(index != parameters.size() - 1)
+                stringBuilder.append("&");
+            index++;
         }
-        return out;
+
+        HttpGet httpGet = new HttpGet(stringBuilder.toString());
+        CloseableHttpResponse httpResponse = closeableHttpClient.execute(httpGet);
+        HttpEntity entity = httpResponse.getEntity();
+        return EntityUtils.toString(entity, "UTF-8");
     }
 
     @Override
