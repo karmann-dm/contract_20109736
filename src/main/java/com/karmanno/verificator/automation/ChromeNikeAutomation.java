@@ -101,8 +101,8 @@ public class ChromeNikeAutomation implements NikeAutomation {
     @Override
     public void enterPhone(String phone) throws InterruptedException {
         WebElement legalCheckBox = webDriver.findElement(By.cssSelector("input[class='nsg-form--input has--2-digits']"));
-        builder.moveToElement(legalCheckBox).click();
-        builder.moveToElement(legalCheckBox).sendKeys(phone);
+        builder.moveToElement(legalCheckBox).click().build().perform();
+        builder.moveToElement(legalCheckBox).sendKeys(phone).build().perform();
         Thread.sleep(1000);
     }
 
@@ -115,8 +115,19 @@ public class ChromeNikeAutomation implements NikeAutomation {
     }
 
     @Override
+    public void pressGetCode() throws InterruptedException {
+        WebElement getCode = webDriver.findElement(By.cssSelector("button[type='submit'][class='nsg-button nsg-grad--nike-fuel']"));
+        builder.moveToElement(getCode).click().build().perform();
+        Thread.sleep(5000);
+    }
+
+    @Override
     public void enterCode(String code) throws InterruptedException {
-        new WebDriverWait(webDriver, 10).until(
-                webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
+        // verificationCode nsg-form--input
+        Thread.sleep(7000);
+        builder.sendKeys(code).build().perform();
+        builder.sendKeys(Keys.ENTER).click().perform();
+
+        Thread.sleep(5000);
     }
 }
