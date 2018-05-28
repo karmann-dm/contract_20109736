@@ -105,15 +105,23 @@ public class MainController implements Initializable {
                         automation.clickAddPhone();
                         automation.checkLegalTerms();
 
+                        logHandler.log("Trying to get number...");
                         JSONObject number = smspvaApiWorker.getPhoneNumber();
+                        if(number == null) {
+                            logHandler.log("Cannot get the number");
+                            throw new RuntimeException("Cannot get the number");
+                        }
                         logHandler.log("Got " + number.getString("number") + " number");
                         automation.enterPhone(number.getString("number"));
                         automation.pressVerify();
                         automation.pressGetCode();
 
+                        logHandler.log("Trying to get code...");
                         String code = smspvaApiWorker.getCode(number.get("id").toString());
-                        if(code == null)
+                        if(code == null) {
+                            logHandler.log("Cannot get the code");
                             throw new RuntimeException("Cannot get the code");
+                        }
                         automation.enterCode(code);
 
                         model.setUserStatus(UserStatus.VERIFIED);
